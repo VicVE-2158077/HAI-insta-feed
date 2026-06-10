@@ -1,6 +1,8 @@
 <script>
-  import { buckets, moveInterest, interests, interestsPanelOpen } from '../stores/algorithm.js';
+  import { buckets, feedMix, moveInterest, interests, interestsPanelOpen } from '../stores/algorithm.js';
   import Icon from './Icon.svelte';
+
+  const feedMixByKey = Object.fromEntries(feedMix.map((item) => [item.key, item]));
 
   $: changedSet = new Set(
     $interests
@@ -24,13 +26,21 @@
 
   <div class="body">
     <p class="lede">
-      These are the topics Instagram uses to choose your Reels.<br />
-      Tap to change.
+      These are the topics Instagram uses to choose your Reels.
     </p>
 
     <section class="group">
       <div class="group-head">
-        <span class="group-title">You're into</span>
+        <div class="group-title-row">
+          <span class="group-title">You're into</span>
+          <span
+            class="group-info"
+            data-tip={`This category will make up ${feedMixByKey.into.percent}% of your feed.`}
+            aria-label={`This category will make up ${feedMixByKey.into.percent}% of your feed.`}
+          >
+            ?
+          </span>
+        </div>
         <span class="group-hint">↓ for less</span>
       </div>
       <div class="chips">
@@ -42,6 +52,7 @@
               on:click={() => moveInterest(i.name, 'down')}
               aria-label="Show less {i.name}"
               title="Show less"
+              type="button"
             >
               <Icon name="chevron-down" size={14} strokeWidth={2.6} />
             </button>
@@ -55,7 +66,16 @@
 
     <section class="group">
       <div class="group-head">
-        <span class="group-title">Sometimes</span>
+        <div class="group-title-row">
+          <span class="group-title">Sometimes</span>
+          <span
+            class="group-info"
+            data-tip={`This category will make up ${feedMixByKey.sometimes.percent}% of your feed.`}
+            aria-label={`This category will make up ${feedMixByKey.sometimes.percent}% of your feed.`}
+          >
+            ?
+          </span>
+        </div>
         <span class="group-hint">↑ more  ·  ↓ less</span>
       </div>
       <div class="chips">
@@ -67,6 +87,7 @@
               on:click={() => moveInterest(i.name, 'up')}
               aria-label="Show more {i.name}"
               title="Show more"
+              type="button"
             >
               <Icon name="chevron-up" size={14} strokeWidth={2.6} />
             </button>
@@ -75,6 +96,7 @@
               on:click={() => moveInterest(i.name, 'down')}
               aria-label="Show less {i.name}"
               title="Show less"
+              type="button"
             >
               <Icon name="chevron-down" size={14} strokeWidth={2.6} />
             </button>
@@ -88,7 +110,16 @@
 
     <section class="group">
       <div class="group-head">
-        <span class="group-title">Show less of</span>
+        <div class="group-title-row">
+          <span class="group-title">Show less of</span>
+          <span
+            class="group-info"
+            data-tip={`This category will make up ${feedMixByKey.less.percent}% of your feed.`}
+            aria-label={`This category will make up ${feedMixByKey.less.percent}% of your feed.`}
+          >
+            ?
+          </span>
+        </div>
         <span class="group-hint">↑ to bring back</span>
       </div>
       <div class="chips">
@@ -100,6 +131,7 @@
               on:click={() => moveInterest(i.name, 'up')}
               aria-label="Bring back {i.name}"
               title="Bring back"
+              type="button"
             >
               <Icon name="chevron-up" size={14} strokeWidth={2.6} />
             </button>
@@ -179,10 +211,78 @@
     justify-content: space-between;
     margin-bottom: 12px;
   }
+  .group-title-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
   .group-title {
     font-size: 14px;
     font-weight: 600;
     color: #fff;
+  }
+  .group-info {
+    position: relative;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid #3a3a3a;
+    color: #9f9f9f;
+    display: inline-grid;
+    place-items: center;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    flex-shrink: 0;
+    cursor: default;
+    user-select: none;
+    transition: background 0.08s, color 0.08s, border-color 0.08s, transform 0.08s;
+  }
+  .group-info:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+    transform: translateY(-1px);
+  }
+  .group-info::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%) translateY(4px);
+    width: max-content;
+    max-width: 180px;
+    padding: 7px 9px;
+    border-radius: 10px;
+    background: rgba(20, 20, 20, 0.98);
+    border: 1px solid #2f2f2f;
+    color: #f1f1f1;
+    font-size: 11px;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    white-space: normal;
+    text-align: left;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+    transition: opacity 0.08s ease, transform 0.08s ease;
+  }
+  .group-info::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 2px);
+    transform: translateX(-50%) translateY(4px);
+    border: 5px solid transparent;
+    border-top-color: rgba(47, 47, 47, 0.98);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.08s ease, transform 0.08s ease;
+  }
+  .group-info:hover::after,
+  .group-info:hover::before {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
   .group-hint {
     font-size: 11px;
@@ -241,8 +341,8 @@
     border: none;
     color: inherit;
     opacity: 0.55;
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     display: grid;
     place-items: center;

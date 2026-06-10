@@ -120,3 +120,32 @@ export const buckets = derived(interests, ($interests) => {
   less.sort((a, b) => b.score - a.score);
   return { into, sometimes, less };
 });
+
+// Rough feed mix used in the explanation tab.
+// Keep some room for discovery so the feed does not get too repetitive.
+export const feedMix = [
+  {
+    key: 'into',
+    label: "You're into",
+    percent: 45,
+    note: 'The biggest slice. These are the topics you interact with the most.'
+  },
+  {
+    key: 'sometimes',
+    label: 'Sometimes',
+    percent: 25,
+    note: 'A smaller stream of adjacent topics to keep the feed varied.'
+  },
+  {
+    key: 'less',
+    label: 'Show less of',
+    percent: 5,
+    note: 'A tiny holdover for lower-priority topics so the model can still learn.'
+  },
+  {
+    key: 'random',
+    label: 'Random discovery',
+    percent: 25,
+    note: 'Reserved for new things, so you keep seeing fresh posts.'
+  }
+];
